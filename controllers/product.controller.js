@@ -157,6 +157,34 @@ export const deleteProductController = async (req, res) =>{
     });
   }
 }
+
+
+export const getProductByCategory = async (req, res) =>{
+  try {
+    const { id } = req.body
+    if(!id){
+      return res.status(400).json({
+        success: false,
+        message: "Provide Category id",
+        error: true
+      })
+    }
+    const product = await ProductModel.find({ category: {$in: id} }).limit(15)
+   
+    return res.status(200).json({
+      success: true,
+      message: "Category products list",
+      error: false,
+      data: product
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message || error,
+      error: true
+    })
+  }
+}
 // export const deleteImageController = async (req, res) => {
 //     try {
 //         const { publicId } = req.body
