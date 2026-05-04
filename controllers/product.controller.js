@@ -178,13 +178,59 @@ export const getProductByCategory = async (req, res) =>{
       data: product
     })
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message || error,
       error: true
     })
   }
 }
+
+export const getProductBySubCategory = async (req, res) =>{
+  try {
+    const {categoryId, subCategoryId, page, limit} = req.body
+    if(!categoryId || !subCategoryId){
+      return res.status(400).json({
+        success: false,
+        message: "Provide Category id and Sub Category id",
+        error: true
+      })
+    }
+    if(!page){
+      page=1
+    }
+    if(!limit){
+      limit=10
+    }
+    const query ={
+      categoryId: {$in: categoryId},
+      subCategoryId: {$in: subCategoryId}
+    }
+    let skip = (page - 1) * limit;
+    const [data, dataCount] = await Promise.all([
+      ProductModel.find(query).sort({createdAt: -1}).skip(skip).limit(limit),
+      ProductModel.countDocuments(query)
+    ])
+
+    return res.status(200).json({
+       message: "Product list",
+       data: data,
+       totalCount: dataCount,
+      pageCeilValue: Math.ceil(dataCount/limit),
+      page:page,
+      limit: limit,
+      success: true,
+      error: false 
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || error,
+      error: true
+    })
+  }
+}
+
 // export const deleteImageController = async (req, res) => {
 //     try {
 //         const { publicId } = req.body
