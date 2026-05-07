@@ -208,7 +208,7 @@ export const getProductBySubCategory = async (req, res) => {
     }
     let skip = (page - 1) * limit;
     const [data, dataCount] = await Promise.all([
-      ProductModel.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      ProductModel.find(query).sort({ createdAt: 1 }).skip(skip).limit(limit),
       ProductModel.countDocuments(query)
     ])
 
