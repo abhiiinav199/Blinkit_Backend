@@ -95,10 +95,10 @@ export const getProductController = async (req, res) => {
 
     let query = search
       ? {
-          $text: {
-            $search: search,
-          },
-        }
+        $text: {
+          $search: search,
+        },
+      }
       : {};
 
     let skip = (page - 1) * limit;
@@ -117,7 +117,7 @@ export const getProductController = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
-      success: false, 
+      success: false,
       message: error.message || error,
       error: true,
     });
@@ -125,10 +125,10 @@ export const getProductController = async (req, res) => {
 };
 
 
-export const deleteProductController = async (req, res) =>{
+export const deleteProductController = async (req, res) => {
   try {
     const { _id } = req.body
-    if(!_id){
+    if (!_id) {
       return res.status(400).json({
         success: false,
         message: "Product Id is required",
@@ -136,7 +136,7 @@ export const deleteProductController = async (req, res) =>{
       })
     }
     const product = await ProductModel.findByIdAndDelete(_id)
-    if(!product){
+    if (!product) {
       return res.status(400).json({
         success: false,
         message: "Product not deleted",
@@ -159,18 +159,18 @@ export const deleteProductController = async (req, res) =>{
 }
 
 
-export const getProductByCategory = async (req, res) =>{
+export const getProductByCategory = async (req, res) => {
   try {
     const { id } = req.body
-    if(!id){
+    if (!id) {
       return res.status(400).json({
         success: false,
         message: "Provide Category id",
         error: true
       })
     }
-    const product = await ProductModel.find({ category: {$in: id} }).limit(15)
-   
+    const product = await ProductModel.find({ category: { $in: id } }).limit(15)
+
     return res.status(200).json({
       success: true,
       message: "Category products list",
@@ -186,41 +186,41 @@ export const getProductByCategory = async (req, res) =>{
   }
 }
 
-export const getProductBySubCategory = async (req, res) =>{
+export const getProductBySubCategory = async (req, res) => {
   try {
-    const {categoryId, subCategoryId, page, limit} = req.body
-    if(!categoryId || !subCategoryId){
+    let { categoryId, subCategoryId, page, limit } = req.body
+    if (!categoryId || !subCategoryId) {
       return res.status(400).json({
         success: false,
         message: "Provide Category id and Sub Category id",
         error: true
       })
     }
-    if(!page){
-      page=1
+    if (!page) {
+      page = 1
     }
-    if(!limit){
-      limit=10
+    if (!limit) {
+      limit = 10
     }
-    const query ={
-      categoryId: {$in: categoryId},
-      subCategoryId: {$in: subCategoryId}
+    const query = {
+      category: { $in: categoryId },
+      subCategory: { $in: subCategoryId }
     }
     let skip = (page - 1) * limit;
     const [data, dataCount] = await Promise.all([
-      ProductModel.find(query).sort({createdAt: -1}).skip(skip).limit(limit),
+      ProductModel.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
       ProductModel.countDocuments(query)
     ])
 
     return res.status(200).json({
-       message: "Product list",
-       data: data,
-       totalCount: dataCount,
-      pageCeilValue: Math.ceil(dataCount/limit),
-      page:page,
+      message: "Product list",
+      data: data,
+      totalCount: dataCount,
+      pageCeilValue: Math.ceil(dataCount / limit),
+      page: page,
       limit: limit,
       success: true,
-      error: false 
+      error: false
     })
   } catch (error) {
     return res.status(500).json({
