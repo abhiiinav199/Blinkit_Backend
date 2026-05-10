@@ -11,7 +11,7 @@ productRouter.delete("/delete",deleteProductController)
 productRouter.post("/get-product-by-category", getProductByCategory)
 productRouter.post("/get-product-by-category-and-subcategory", getProductBySubCategory)
 
-// productRouter.post('/get-product-details',getProductDetails)
+productRouter.post('/get-product-details',getProductDetails)
 
 //update product
 // productRouter.put('/update-product-details',auth,admin,updateProductDetails)
