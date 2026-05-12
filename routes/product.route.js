@@ -14,5 +14,5 @@ productRouter.post("/get-product-by-category-and-subcategory", getProductBySubCa
 productRouter.post('/get-product-details',getProductDetails)
 
 //update product
-// productRouter.put('/update-product-details',auth,admin,updateProductDetails)
+productRouter.put('/update-product-details',auth,admin,updateProductDetails)
 export default productRouter

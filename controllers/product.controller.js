@@ -231,14 +231,14 @@ export const getProductBySubCategory = async (req, res) => {
   }
 }
 
-export const getProductDetails = async(request,response)=>{
+export const getProductDetails = async(req,res)=>{
    try {
-        const { productId } = request.body 
+        const { productId } = req.body 
 
         const product = await ProductModel.findOne({ _id : productId })
 
 
-        return response.json({
+        return res.json({
             message : "product details",
             data : product,
             error : false,
@@ -246,7 +246,7 @@ export const getProductDetails = async(request,response)=>{
         })
 
     } catch (error) {
-        return response.status(500).json({
+        return res.status(500).json({
             message : error.message || error,
             error : true,
             success : false
@@ -255,12 +255,12 @@ export const getProductDetails = async(request,response)=>{
 }
 
 //update product
-export const updateProductDetails = async(request,response)=>{
+export const updateProductDetails = async(req,res)=>{
     try {
-        const { _id } = request.body 
+        const { _id } = req.body 
 
         if(!_id){
-            return response.status(400).json({
+            return res.status(400).json({
                 message : "provide product _id",
                 error : true,
                 success : false
@@ -268,10 +268,10 @@ export const updateProductDetails = async(request,response)=>{
         }
 
         const updateProduct = await ProductModel.updateOne({ _id : _id },{
-            ...request.body
+            ...req.body
         })
 
-        return response.json({
+        return res.json({
             message : "updated successfully",
             data : updateProduct,
             error : false,
@@ -279,7 +279,7 @@ export const updateProductDetails = async(request,response)=>{
         })
 
     } catch (error) {
-        return response.status(500).json({
+        return res.status(500).json({
             message : error.message || error,
             error : true,
             success : false
