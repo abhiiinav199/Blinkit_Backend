@@ -239,7 +239,7 @@ export const getProductDetails = async(req,res)=>{
 
 
         return res.json({
-            message : "product details",
+            message : "Product Details",
             data : product,
             error : false,
             success : true
@@ -261,7 +261,7 @@ export const updateProductDetails = async(req,res)=>{
 
         if(!_id){
             return res.status(400).json({
-                message : "provide product _id",
+                message : "Provide Product _id",
                 error : true,
                 success : false
             })
@@ -272,7 +272,7 @@ export const updateProductDetails = async(req,res)=>{
         })
 
         return res.json({
-            message : "updated successfully",
+            message : "Updated Successfully",
             data : updateProduct,
             error : false,
             success : true
