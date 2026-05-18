@@ -125,40 +125,6 @@ export const getProductController = async (req, res) => {
 };
 
 
-export const deleteProductController = async (req, res) => {
-  try {
-    const { _id } = req.body
-    if (!_id) {
-      return res.status(400).json({
-        success: false,
-        message: "Product Id is required",
-        error: true
-      })
-    }
-    const product = await ProductModel.findByIdAndDelete(_id)
-    if (!product) {
-      return res.status(400).json({
-        success: false,
-        message: "Product not deleted",
-        error: true
-      })
-    }
-    return res.status(200).json({
-      success: true,
-      message: "Product deleted successfully",
-      error: false,
-      data: product
-    })
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message || error,
-      error: true,
-    });
-  }
-}
-
-
 export const getProductByCategory = async (req, res) => {
   try {
     const { id } = req.body
@@ -285,6 +251,41 @@ export const updateProductDetails = async(req,res)=>{
             success : false
         })
     }
+}
+
+
+// delete product
+export const deleteProductController = async (req, res) => {
+  try {
+    const { _id } = req.body
+    if (!_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Product Id is required",
+        error: true
+      })
+    }
+    const deletedProduct = await ProductModel.deleteOne({ _id : _id })
+    if (!deletedProduct) {
+      return res.status(400).json({
+        success: false,
+        message: "Product not deleted",
+        error: true
+      })
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Product deleted successfully",
+      error: false,
+      data: deletedProduct
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || error,
+      error: true,
+    });
+  }
 }
 
 // export const deleteImageController = async (req, res) => {
