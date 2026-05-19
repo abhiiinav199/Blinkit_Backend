@@ -40,7 +40,7 @@ const productSchema = mongoose.Schema({
         type: String,
         default: null,
     },
-    more_Details :{
+    more_details :{
         type: Object,
         default: {}
     },

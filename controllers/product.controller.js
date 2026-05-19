@@ -13,7 +13,7 @@ export const createProductController = async (req, res) => {
       price,
       discount,
       description,
-      more_Details,
+      more_details,
     } = req.body;
 
     if (
@@ -42,7 +42,7 @@ export const createProductController = async (req, res) => {
       price,
       discount,
       description,
-      more_Details,
+      more_details,
     });
 
     //Above code is same as below code. use below code if you want to use custom logic before saving. Ex- You can run custom logic before calling .save(),Better when you need hooks/middleware or validation logic
@@ -56,7 +56,7 @@ export const createProductController = async (req, res) => {
     //     price,
     //     discount,
     //     description,
-    //     more_Details
+    //     more_details
     // })
     // const savedProduct = await product.save()
     if (!product) {
