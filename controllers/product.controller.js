@@ -290,7 +290,7 @@ export const deleteProductController = async (req, res) => {
 
 export const searchProduct = async (req, res) => {
      try {
-        let { search, page , limit } = request.body 
+        let { search, page , limit } = req.body 
 
         if(!page){
             page = 1
@@ -312,7 +312,7 @@ export const searchProduct = async (req, res) => {
             ProductModel.countDocuments(query)
         ])
 
-        return response.json({
+        return res.json({
             message : "Product data",
             error : false,
             success : true,
