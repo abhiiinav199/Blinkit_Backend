@@ -5,8 +5,8 @@ import { addToCartItemController } from "../controllers/cart.controller.js";
 
 const cartRouter = Router()
 
-cartRouter.post("/add-to-cart", auth, addToCartItemController)
+cartRouter.post("/create", auth, addToCartItemController)
 
 
 
-export default cartRouter;
+export default cartRouter; 
