@@ -6,7 +6,7 @@ import { addToCartItemController, getCartItemController } from "../controllers/c
 const cartRouter = Router()
 
 cartRouter.post("/create", auth, addToCartItemController)
-// cartRouter.get("/get", auth, getCartItemController)
+cartRouter.get("/get", auth, getCartItemController)
 
 
 
