@@ -3,7 +3,7 @@ import UserModel from "../Models/user.model.js"
 
 export const addToCartItemController = async (req, res) => {
     try {
-        const { userId } = req?.user;
+        const { userId } = req;
         const { productId } = req?.body;
 
         if (!productId) {
@@ -13,7 +13,18 @@ export const addToCartItemController = async (req, res) => {
                 success: false
             })
         }
-
+        
+        const checkCartItem = await CartProductModel.findOne({
+            userId: userId,
+            productId: productId
+        })
+        if(checkCartItem){
+            return res.status(400).json({
+                message:"Product already in cart",
+                error:true,
+                success:false
+            })
+        }
         const cartItem = await CartProductModel.create({
             quantity: 1,
             userId: userId,
