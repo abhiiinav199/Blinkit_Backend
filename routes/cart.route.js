@@ -7,7 +7,7 @@ const cartRouter = Router()
 
 cartRouter.post("/create", auth, addToCartItemController)
 cartRouter.get("/get", auth, getCartItemController)
-cartRouter.put("/updare-qty", auth, updateCartItemController)
+cartRouter.put("/update-qty", auth, updateCartItemController)
 
 
 
