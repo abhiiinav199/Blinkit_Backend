@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { auth } from "../middleware/auth.js";
-import { addToCartItemController, getCartItemController, updateCartItemController } from "../controllers/cart.controller.js";
+import { addToCartItemController, deleteCartItemController, getCartItemController, updateCartItemController } from "../controllers/cart.controller.js";
 
 
 const cartRouter = Router()
@@ -8,7 +8,7 @@ const cartRouter = Router()
 cartRouter.post("/create", auth, addToCartItemController)
 cartRouter.get("/get", auth, getCartItemController)
 cartRouter.put("/update-qty", auth, updateCartItemController)
+cartRouter.delete('/delete', auth, deleteCartItemController)
 
 
-
-export default cartRouter; 
+export default cartRouter;
