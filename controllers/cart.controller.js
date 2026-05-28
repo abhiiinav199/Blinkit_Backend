@@ -120,6 +120,7 @@ export const deleteCartItemController = async (req, res) => {
         }
         const deleteCartItem = await CartProductModel.deleteOne({
             _id: _id,
+            userId: userId
 
         })
         return res.status(200).json({
