@@ -2,7 +2,7 @@ import AddressModel from "../Models/address.model.js";
 
 export const addAddressController = async(req,res) =>{
     try {
-        const userId = req.userId //middleware
+        const {userId} = req  //middleware
         const {address_line,city,state,country,pincode,mobile} = req?.body
         if(!address_line || !city || !state || !country || !pincode || !mobile){
             return res.status(400).json({
@@ -18,7 +18,8 @@ export const addAddressController = async(req,res) =>{
             state,
             country,
             pincode,
-            mobile
+            mobile,
+            userId :userId
         })
 
         const addAddressUserId = await UserModel.findByIdAndUpdate(userId, { $push: { address_details : createAddress._id } })
@@ -28,6 +29,28 @@ export const addAddressController = async(req,res) =>{
             error : false,
             success : true,
             data : createAddress
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success : false,
+            message : error.message ||error
+        })
+    }
+}
+
+
+export const getAddressController = async (req, res) =>{
+    try {
+
+        const {userId}= req
+        
+        const data = await AddressModel.find({userId: userId})
+
+        return res.json({
+            data: data,
+            success:true,
+            error:false,
+            message: "List of Address"
         })
     } catch (error) {
         return res.status(500).json({

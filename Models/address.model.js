@@ -23,6 +23,10 @@ const addrressSchema = new mongoose.Schema({
     status: {
         type: Boolean,
         default: "true"
+    },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        default :""
     }
 }, {
     timestamps: true
