@@ -4,6 +4,6 @@ import { addAddressController } from "../controllers/address.controller.js";
 
 const addressRouter = Router()
 
-addressRouter.post("/add", auth, addAddressController)
+addressRouter.post("/create", auth, addAddressController)
 
 export default addressRouter
