@@ -30,6 +30,6 @@ const addrressSchema = new mongoose.Schema({
 
 
 
-const AddressModel = mongoose.Model("address", addrressSchema)
+const AddressModel = mongoose.model("address", addrressSchema)
 
 export default AddressModel
