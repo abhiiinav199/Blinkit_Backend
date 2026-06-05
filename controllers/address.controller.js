@@ -1,4 +1,5 @@
 import AddressModel from "../Models/address.model.js";
+import UserModel from "../Models/user.model.js"
 
 export const addAddressController = async(req,res) =>{
     try {
