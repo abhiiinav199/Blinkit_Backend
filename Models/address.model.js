@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const addrressSchema = new mongoose.Schema({
+const addressSchema = new mongoose.Schema({
     address_Line: {
         type: String,
         default: ""
