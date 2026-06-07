@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 const addressSchema = new mongoose.Schema({
-    address_Line: {
+    address_line: {
         type: String,
         default: ""
     },
@@ -15,6 +15,10 @@ const addressSchema = new mongoose.Schema({
     },
     pincode: {
         type: String,
+    },
+    country: {
+        type: String,
+        default: ""
     },
     mobile: {
         type: Number,
