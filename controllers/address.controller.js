@@ -33,6 +33,7 @@ export const addAddressController = async (req, res) => {
         })
     } catch (error) {
         return res.status(500).json({
+            error:true,
             success: false,
             message: error.message || error
         })
@@ -55,6 +56,7 @@ export const getAddressController = async (req, res) => {
         })
     } catch (error) {
         return res.status(500).json({
+            error: true,
             success: false,
             message: error.message || error
         })
@@ -84,6 +86,29 @@ export const updateAddressController = async (req, res) => {
 
     } catch (error) {
         return res.status(500).json({
+            error: true,
+            success: false,
+            message: error.message || error
+        })
+    }
+}
+
+export const deleteAddressController = async (req, res) =>{
+    try{
+        const {userId} = req //middleware
+        const {_id} = req.body
+
+        const disableAddress= await AddressModel.updateOne({_id : _id, userId : userId}, {status : false})
+
+        return res.status(200).json({
+            message: "Address Removed",
+            error: false,
+            success: true
+        })
+
+    }catch(error){
+        return res.status(500).json({
+            error: true,
             success: false,
             message: error.message || error
         })
