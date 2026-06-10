@@ -4,7 +4,7 @@ import { cashOnDeliveryOrderController } from "../controllers/order.controller.j
 
 const orderRouter= Router()
 
-orderRouter.post("/create", auth, cashOnDeliveryOrderController)
+orderRouter.post("/cash-on-delivery ", auth, cashOnDeliveryOrderController)
 
 
 export default orderRouter
