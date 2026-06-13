@@ -2,6 +2,7 @@ import mongoose from "mongoose"
 import OrderModel from "../Models/order.model.js"
 import CartProductModel from "../Models/cartproduct.model.js"
 import UserModel from "../Models/user.model.js"
+import Stripe from "stripe"
 
 export const cashOnDeliveryOrderController = async (req, res) =>{
     try {
@@ -64,13 +65,27 @@ const priceWithDiscount = (price,dis = 1)=>{
     const actualPrice = price - discountAmount
     return actualPrice
 }
-
+ 
 
 export const paymentController =async (req, res) =>{
     try {
          const {userId} = req //middleware
         const {list_items, totalAmt, addressId, subTotalAmt} = req.body
-        console.log("list_items", list_items);
+
+        const user = await UserModel.findById(userId)
+        const params = {
+            submit_type: "pay",
+            mode: "payment",
+            payment_method_types : ["card"],
+            customer_email : user.email,
+            metadata :{
+                userId : userId,
+                addressId : addressId
+            },
+            line_items : line_items,
+            success: `${process.env.CLIENT_URL}/success`,
+            cancel: `${process.env.CLIENT_URL}/cancel`
+        }
 
         const line_items= list_items.map((item) => {
             return{
@@ -84,10 +99,16 @@ export const paymentController =async (req, res) =>{
                     }
                 },
                 unit_amount : priceWithDiscount(item.productId.price, item,productId.dicount) //in paise
-               } 
+               } ,
+               adjustable_quantity:{
+                enabled : true,
+                minimum : 1
+               },
+               quantity : item.quantity
             }
         })
 
+        const session = await Stripe.checkout.sessions.create()
         
     } catch (error) {
         return res.status(500).json({
