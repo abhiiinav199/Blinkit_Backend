@@ -47,9 +47,53 @@ export const cashOnDeliveryOrderController = async (req, res) =>{
 
     } catch (error) {
         return res.status(500).json({
+            error: true,
             success: false,
-            message: "Internal Server Error",
-            error: error.message || error
+            message: error.message || error,
+        })
+    }
+}
+
+
+
+const priceWithDiscount = (price,dis = 1)=>{
+    price = Number(price)
+    dis = Number(dis)
+
+    const discountAmount = Math.ceil(price * dis / 100)
+    const actualPrice = price - discountAmount
+    return actualPrice
+}
+
+
+export const paymentController =async (req, res) =>{
+    try {
+         const {userId} = req //middleware
+        const {list_items, totalAmt, addressId, subTotalAmt} = req.body
+        console.log("list_items", list_items);
+
+        const line_items= list_items.map((item) => {
+            return{
+               price_data:{
+                currency : "inr",
+                product_data:{
+                    name : item.productId.name,
+                    images : [item.productId.image],
+                    metadata:{
+                        productId : item.productId._id
+                    }
+                },
+                unit_amount : priceWithDiscount(item.productId.price, item,productId.dicount) //in paise
+               } 
+            }
+        })
+
+        
+    } catch (error) {
+        return res.status(500).json({
+            error: true,
+            success:false,
+            message: error.message || error
         })
     }
 }
