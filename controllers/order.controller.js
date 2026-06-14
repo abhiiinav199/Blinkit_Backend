@@ -108,8 +108,9 @@ export const paymentController =async (req, res) =>{
             }
         })
 
-        const session = await Stripe.checkout.sessions.create()
+        const session = await Stripe.checkout.sessions.create(params)
         
+        return res.status(303).json(session)
     } catch (error) {
         return res.status(500).json({
             error: true,
