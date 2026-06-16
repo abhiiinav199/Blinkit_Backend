@@ -88,6 +88,8 @@ export const paymentController =async (req, res) =>{
         }
 
         const line_items= list_items.map((item) => {
+            const unitAmount = priceWithDiscount(item.productId.price, item.productId.discount) * 100
+
             return{
                price_data:{
                 currency : "inr",
@@ -98,7 +100,7 @@ export const paymentController =async (req, res) =>{
                         productId : item.productId._id
                     }
                 },
-                unit_amount : priceWithDiscount(item.productId.price, item,productId.dicount) //in paise
+                unit_amount : unitAmount  //in paise
                } ,
                adjustable_quantity:{
                 enabled : true,
@@ -110,7 +112,7 @@ export const paymentController =async (req, res) =>{
 
         const session = await Stripe.checkout.sessions.create(params)
         
-        return res.status(303).json(session)
+        return res.status(200).json(session)
     } catch (error) {
         return res.status(500).json({
             error: true,
