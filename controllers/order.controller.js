@@ -2,47 +2,49 @@ import mongoose from "mongoose"
 import OrderModel from "../Models/order.model.js"
 import CartProductModel from "../Models/cartproduct.model.js"
 import UserModel from "../Models/user.model.js"
-import Stripe from "stripe"
+import Stripe from "../config/stripe.js"
+import dotenv from 'dotenv';
+dotenv.config();
 
-export const cashOnDeliveryOrderController = async (req, res) =>{
+export const cashOnDeliveryOrderController = async (req, res) => {
     try {
-        const {userId} = req //middleware
-        const {list_items, totalAmt, addressId, subTotalAmt} = req.body
+        const { userId } = req //middleware
+        const { list_items, totalAmt, addressId, subTotalAmt } = req.body
         console.log("list_items", list_items);
-        
 
-        const payload = list_items.map((item) =>{
+
+        const payload = list_items.map((item) => {
             return {
-                userId : userId,
+                userId: userId,
                 orderId: `ORD-${new mongoose.Types.ObjectId()}`, //custom orderId making using mongoose ObjectId-example ORD-64b8c9f1e1d3c2a5f0e4b8a, ORD-6850fca1f0f4d4f2c9f8a123
                 productId: item.productId._id,
-                productDetails:{
-                    name : item.productId.name,
-                    image : item.productId.image,
+                productDetails: {
+                    name: item.productId.name,
+                    image: item.productId.image,
                 },
-                paymentId : "",
-                payment_status :"CASH ON DELIVERY",
-                delivery_address : addressId,
-                subTotalAmt :subTotalAmt,
-                totalAmt : totalAmt,
+                paymentId: "",
+                payment_status: "CASH ON DELIVERY",
+                delivery_address: addressId,
+                subTotalAmt: subTotalAmt,
+                totalAmt: totalAmt,
             }
         })
 
-        const generatedOrder =  await OrderModel.insertMany(payload)
+        const generatedOrder = await OrderModel.insertMany(payload)
 
         //remove from cart after order placed
         const removeCartItem = await CartProductModel.deleteMany({
-            userId : userId
+            userId: userId
         })
         //empty shopping cart in user model
-        const updateInUser = await UserModel.updateOne({_id: userId},{
-            shopping_cart : []
+        const updateInUser = await UserModel.updateOne({ _id: userId }, {
+            shopping_cart: []
         })
 
         return res.status(200).json({
             success: true,
             message: "Order placed successfully with cash on delivery",
-            orderDetails : generatedOrder
+            orderDetails: generatedOrder
         })
 
 
@@ -57,7 +59,7 @@ export const cashOnDeliveryOrderController = async (req, res) =>{
 
 
 
-const priceWithDiscount = (price,dis = 1)=>{
+const priceWithDiscount = (price, dis = 1) => {
     price = Number(price)
     dis = Number(dis)
 
@@ -65,59 +67,83 @@ const priceWithDiscount = (price,dis = 1)=>{
     const actualPrice = price - discountAmount
     return actualPrice
 }
- 
 
-export const paymentController =async (req, res) =>{
+
+export const paymentController = async (req, res) => {
     try {
-         const {userId} = req //middleware
-        const {list_items, totalAmt, addressId, subTotalAmt} = req.body
+        const { userId } = req //middleware
+        const { list_items, totalAmt, addressId, subTotalAmt } = req.body
 
         const user = await UserModel.findById(userId)
-        const params = {
-            submit_type: "pay",
-            mode: "payment",
-            payment_method_types : ["card"],
-            customer_email : user.email,
-            metadata :{
-                userId : userId,
-                addressId : addressId
-            },
-            line_items : line_items,
-            success: `${process.env.CLIENT_URL}/success`,
-            cancel: `${process.env.CLIENT_URL}/cancel`
-        }
 
-        const line_items= list_items.map((item) => {
+        const line_items = list_items.map((item) => {
             const unitAmount = priceWithDiscount(item.productId.price, item.productId.discount) * 100
 
-            return{
-               price_data:{
-                currency : "inr",
-                product_data:{
-                    name : item.productId.name,
-                    images : [item.productId.image],
-                    metadata:{
-                        productId : item.productId._id
-                    }
+            return {
+                price_data: {
+                    currency: "inr",
+                    product_data: {
+                        name: item.productId.name,
+                        images: item.productId.image,
+                        metadata: {
+                            productId: item.productId._id
+                        }
+                    },
+                    unit_amount: unitAmount  //in paise
                 },
-                unit_amount : unitAmount  //in paise
-               } ,
-               adjustable_quantity:{
-                enabled : true,
-                minimum : 1
-               },
-               quantity : item.quantity
+                adjustable_quantity: {
+                    enabled: true,
+                    minimum: 1
+                },
+                quantity: item.quantity
             }
         })
 
+
+        const params = {
+            submit_type: "pay",
+            mode: "payment",
+            payment_method_types: ["card"],
+            customer_email: user.email,
+            metadata: {
+                userId: userId,
+                addressId: addressId
+            },
+            line_items: line_items,
+            success_url: `${process.env.FRONTEND_URL}/success`,
+            cancel_url: `${process.env.FRONTEND_URL}/cancel`
+        }
+        // Invalid string: {"3":"https://res.cloudinary.com/dabbunjfh/image/upload/v1776876851/blinkeyit/dxsddlhhl9sviz3cakuo.jpg","4":"https://res.cloudinary.com/dabbunjfh/image/upload/v1776876857/blinkeyit/te8kai22llfo6zkx9epq.jpg","0":"https://res.cloudinary.com/dabbunjfh/image/upload/v1776876825/blinkeyit/hjlfoxa6g32bdvujpnwq.jpg","1":"https://res.cloudinary.com/dabbunjfh/image/upload/v1776876834/blinkeyit/yp3faujudtnti75com7j.jpg","5":"https://res.cloudinary.com/dabbunjfh/image/upload/v1776876862/blinkeyit/ojz65gimbu96ojq9fblk.jpg","2":"https://res.cloudinary.com/dabbunjfh/image/upload/v1776876840/blinkeyit/bua4yjtspr4poetq8tfm.jpg"}
+
+        // stripe.redirectToCheckout is no longer supported in this version of Stripe.js. See the changelog for more details: https://docs.stripe.com/changelog/clover/2025-09-30/remove-redirect-to-checkout.
+
+
+
         const session = await Stripe.checkout.sessions.create(params)
-        
+
         return res.status(200).json(session)
     } catch (error) {
         return res.status(500).json({
             error: true,
-            success:false,
+            success: false,
             message: error.message || error
         })
     }
 }
+
+// http://localhost:3000/api/order/webhook
+
+export const webhookStripe = async (req, res) => {
+    try {
+
+    } catch (error) {
+        return res.status(500).json({
+            error: true,
+            success: false,
+            message: error.message || error
+        })
+    }
+
+}
+
+

@@ -38,16 +38,16 @@ const PORT = process.env.PORT || 8080
 
 app.get("/" , (req, res) =>{
         // REVERSING A STRING: JUST FOR PRACTICE
-    // function reverseString(str) {
-    //     // const newString= str.split(" ").reverse().join("");
-    //     console.log(str.split("").reverse().join("").replace(/\s/g, ""))
-    //     // console.log(newString);
-    // }
+    function reverseString(str) {
+        // const newString= str.split(" ").reverse().join("");
+        console.log(str.split("").reverse().join("").replace(/\s/g, ""))
+        // console.log(newString);
+    }
     
-    // reverseString("Home Root TREE") 
-    // res.json({
-    //     message: "Hello World"
-    // })
+    reverseString("Home Root TREE") 
+    res.json({
+        message: "Hello World"
+    })
 
 })
 
