@@ -113,7 +113,6 @@ export const paymentController = async (req, res) => {
             success_url: `${process.env.FRONTEND_URL}/success`,
             cancel_url: `${process.env.FRONTEND_URL}/cancel`
         }
-        // Invalid string: {"3":"https://res.cloudinary.com/dabbunjfh/image/upload/v1776876851/blinkeyit/dxsddlhhl9sviz3cakuo.jpg","4":"https://res.cloudinary.com/dabbunjfh/image/upload/v1776876857/blinkeyit/te8kai22llfo6zkx9epq.jpg","0":"https://res.cloudinary.com/dabbunjfh/image/upload/v1776876825/blinkeyit/hjlfoxa6g32bdvujpnwq.jpg","1":"https://res.cloudinary.com/dabbunjfh/image/upload/v1776876834/blinkeyit/yp3faujudtnti75com7j.jpg","5":"https://res.cloudinary.com/dabbunjfh/image/upload/v1776876862/blinkeyit/ojz65gimbu96ojq9fblk.jpg","2":"https://res.cloudinary.com/dabbunjfh/image/upload/v1776876840/blinkeyit/bua4yjtspr4poetq8tfm.jpg"}
 
         // stripe.redirectToCheckout is no longer supported in this version of Stripe.js. See the changelog for more details: https://docs.stripe.com/changelog/clover/2025-09-30/remove-redirect-to-checkout.
 
