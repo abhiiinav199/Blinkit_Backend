@@ -131,27 +131,22 @@ export const paymentController = async (req, res) => {
 export const webhookStripe = async (req, res) => {
         const event = req.body
 
+        const endPointSecret = process.env.STRIPE_ENDPOINT_WEBHOOK_SECRET
         console.log("event", event)
 
 
         // Handle the event
         switch (event.type) {
-            case 'payment_intent.succeeded':
-                const paymentIntent = event.data.object;
-                // Then define and call a method to handle the successful payment intent.
-                // handlePaymentIntentSucceeded(paymentIntent);
-                break;
             case 'checkout.session.completed':
-                const completedCheckOutSession = event.data.object;
-            // Then define and call 
-
-            // ... handle other event types
+                const session = event.data.object;
+                const lineItems= await Stripe.checkout.sessions.listLineItems(session.id)
+                console.log("lineItems", lineItems)
             default:
                 console.log(`Unhandled event type ${event.type}`);
         }
 
         // Return a response to acknowledge receipt of the event
-        response.json({ received: true });
+        res.json({ received: true });
 
 }
 
