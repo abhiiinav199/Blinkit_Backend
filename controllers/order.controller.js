@@ -114,10 +114,6 @@ export const paymentController = async (req, res) => {
             cancel_url: `${process.env.FRONTEND_URL}/cancel`
         }
 
-        // stripe.redirectToCheckout is no longer supported in this version of Stripe.js. See the changelog for more details: https://docs.stripe.com/changelog/clover/2025-09-30/remove-redirect-to-checkout.
-
-
-
         const session = await Stripe.checkout.sessions.create(params)
 
         return res.status(200).json(session)
@@ -133,15 +129,29 @@ export const paymentController = async (req, res) => {
 // http://localhost:3000/api/order/webhook
 
 export const webhookStripe = async (req, res) => {
-    try {
+        const event = req.body
 
-    } catch (error) {
-        return res.status(500).json({
-            error: true,
-            success: false,
-            message: error.message || error
-        })
-    }
+        console.log("event", event)
+
+
+        // Handle the event
+        switch (event.type) {
+            case 'payment_intent.succeeded':
+                const paymentIntent = event.data.object;
+                // Then define and call a method to handle the successful payment intent.
+                // handlePaymentIntentSucceeded(paymentIntent);
+                break;
+            case 'checkout.session.completed':
+                const completedCheckOutSession = event.data.object;
+            // Then define and call 
+
+            // ... handle other event types
+            default:
+                console.log(`Unhandled event type ${event.type}`);
+        }
+
+        // Return a response to acknowledge receipt of the event
+        response.json({ received: true });
 
 }
 
