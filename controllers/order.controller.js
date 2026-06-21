@@ -126,27 +126,74 @@ export const paymentController = async (req, res) => {
     }
 }
 
-// http://localhost:3000/api/order/webhook
 
-export const webhookStripe = async (req, res) => {
-        const event = req.body
+const getOrderProductItem = async (lineItems, userId) => {
+    const ProductList = []
 
-        const endPointSecret = process.env.STRIPE_ENDPOINT_WEBHOOK_SECRET
-        console.log("event", event)
+    if (lineItems?.data?.length > 0) {
+        for (const items of lineItems.data) {
 
+            const product = await Stripe.products.retrieve(items.price.product)
 
-        // Handle the event
-        switch (event.type) {
-            case 'checkout.session.completed':
-                const session = event.data.object;
-                const lineItems= await Stripe.checkout.sessions.listLineItems(session.id)
-                console.log("lineItems", lineItems)
-            default:
-                console.log(`Unhandled event type ${event.type}`);
+            const payload = {
+                userId: userId,
+                orderId: `ORD-${new mongoose.Types.ObjectId()}`,
+                productId: product.metadata.productId,
+                productDetails: {
+                    name: product.name,
+                    image: product.images[0],
+                },
+                paymentId: product.payment_intent,
+                payment_status: product.payment_status,
+                delivery_address: product.metadata.addressId,
+                subTotalAmt: product.amount_total / 100,
+                totalAmt: product.amount_total / 100,
+            }
+
+            productList.push(payload)
+
         }
 
-        // Return a response to acknowledge receipt of the event
-        res.json({ received: true });
+    }
+
+    return ProductList
+}
+//endpoint-  http://localhost:3000/api/order/webhook
+export const webhookStripe = async (req, res) => {
+    const event = req.body
+
+    const endPointSecret = process.env.STRIPE_ENDPOINT_WEBHOOK_SECRET
+    console.log("event", event)
+
+
+    // Handle the event
+    switch (event.type) {
+        case 'checkout.session.completed':
+            const session = event.data.object;
+
+            const lineItems = await Stripe.checkout.sessions.listLineItems(session.id)
+
+            const userId = session.metadata.userId
+
+            const orderProduct = await getOrderProductItem(lineItems, userId)
+
+            const order = await OrderModel.insertMany(orderProduct)
+
+            if (order) {
+                const removeCartItem = await UserModel.findByIdAndUpdate(userId, {
+                    shopping_cart: []
+                })
+                const removeCartDB = await CartProductModel.deleteMany(userId)
+            }
+
+            break;
+
+        default:
+            console.log(`Unhandled event type ${event.type}`);
+    }
+
+    // Return a response to acknowledge receipt of the event
+    res.json({ received: true });
 
 }
 
