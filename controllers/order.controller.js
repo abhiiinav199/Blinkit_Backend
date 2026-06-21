@@ -127,13 +127,13 @@ export const paymentController = async (req, res) => {
 }
 
 
-const getOrderProductItem = async (lineItems, userId) => {
-    const ProductList = []
+const getOrderProductItem = async ({ lineItems, userId, addressId, paymentId, payment_status }) => {
+    const productList = []
 
     if (lineItems?.data?.length > 0) {
-        for (const items of lineItems.data) {
+        for (const item of lineItems.data) {
 
-            const product = await Stripe.products.retrieve(items.price.product)
+            const product = await Stripe.products.retrieve(item.price.product)
 
             const payload = {
                 userId: userId,
@@ -143,11 +143,11 @@ const getOrderProductItem = async (lineItems, userId) => {
                     name: product.name,
                     image: product.images[0],
                 },
-                paymentId: product.payment_intent,
-                payment_status: product.payment_status,
-                delivery_address: product.metadata.addressId,
-                subTotalAmt: Number(product.amount_total / 100),
-                totalAmt: Number(product.amount_total / 100),
+                paymentId: paymentId,
+                payment_status: payment_status,
+                delivery_address: addressId,
+                subTotalAmt: Number(item.amount_total / 100),
+                totalAmt: Number(item.amount_total / 100),
             }
 
             productList.push(payload)
@@ -156,7 +156,7 @@ const getOrderProductItem = async (lineItems, userId) => {
 
     }
 
-    return ProductList
+    return productList
 }
 //endpoint-  http://localhost:3000/api/order/webhook
 export const webhookStripe = async (req, res) => {
@@ -175,18 +175,25 @@ export const webhookStripe = async (req, res) => {
 
             const userId = session.metadata.userId
 
-            const orderProduct = await getOrderProductItem(lineItems, userId)
+            const orderProduct = await getOrderProductItem(
+                {
+                    lineItems :lineItems, 
+                    userId: userId, 
+                    addressId: session.metadata.addressId,
+                    paymentId: session.payment_intent,
+                    payment_status: session.payment_status
+                },
+                )
 
-            console.log("orderProduct", orderProduct);
-            // const order = await OrderModel.insertMany(orderProduct)
+            const order = await OrderModel.insertMany(orderProduct)
             
 
-            // if (order) {
-            //     const removeCartItem = await UserModel.findByIdAndUpdate(userId, {
-            //         shopping_cart: []
-            //     })
-            //     const removeCartDB = await CartProductModel.deleteMany(userId)
-            // }
+            if (order) {
+                const removeCartItem = await UserModel.findByIdAndUpdate(userId, {
+                    shopping_cart: []
+                })
+                const removeCartDB = await CartProductModel.deleteMany({userId: userId})
+            }
 
             break;
 
