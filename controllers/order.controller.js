@@ -146,8 +146,8 @@ const getOrderProductItem = async (lineItems, userId) => {
                 paymentId: product.payment_intent,
                 payment_status: product.payment_status,
                 delivery_address: product.metadata.addressId,
-                subTotalAmt: product.amount_total / 100,
-                totalAmt: product.amount_total / 100,
+                subTotalAmt: Number(product.amount_total / 100),
+                totalAmt: Number(product.amount_total / 100),
             }
 
             productList.push(payload)
@@ -177,14 +177,16 @@ export const webhookStripe = async (req, res) => {
 
             const orderProduct = await getOrderProductItem(lineItems, userId)
 
-            const order = await OrderModel.insertMany(orderProduct)
+            console.log("orderProduct", orderProduct);
+            // const order = await OrderModel.insertMany(orderProduct)
+            
 
-            if (order) {
-                const removeCartItem = await UserModel.findByIdAndUpdate(userId, {
-                    shopping_cart: []
-                })
-                const removeCartDB = await CartProductModel.deleteMany(userId)
-            }
+            // if (order) {
+            //     const removeCartItem = await UserModel.findByIdAndUpdate(userId, {
+            //         shopping_cart: []
+            //     })
+            //     const removeCartDB = await CartProductModel.deleteMany(userId)
+            // }
 
             break;
 
