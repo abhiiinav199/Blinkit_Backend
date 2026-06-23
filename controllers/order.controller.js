@@ -188,7 +188,7 @@ export const webhookStripe = async (req, res) => {
             const order = await OrderModel.insertMany(orderProduct)
             
 
-            if (order) {
+            if (Boolean(order[0])) {
                 const removeCartItem = await UserModel.findByIdAndUpdate(userId, {
                     shopping_cart: []
                 })
@@ -206,4 +206,23 @@ export const webhookStripe = async (req, res) => {
 
 }
 
+export const getOrderDetailsController = async(request,response)=>{
+    try {
+        const userId = request.userId // order id
 
+        const orderlist = await OrderModel.find({ userId : userId }).sort({ createdAt : -1 }).populate('delivery_address')
+
+        return response.json({
+            message : "order list",
+            data : orderlist,
+            error : false,
+            success : true
+        })
+    } catch (error) {
+        return response.status(500).json({
+            message : error.message || error,
+            error : true,
+            success : false
+        })
+    }
+} 
