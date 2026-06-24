@@ -134,6 +134,8 @@ const getOrderProductItem = async ({ lineItems, userId, addressId, paymentId, pa
         for (const item of lineItems.data) {
 
             const product = await Stripe.products.retrieve(item.price.product)
+            console.log("product", product)
+            console.log("item", item)
 
             const payload = {
                 userId: userId,
